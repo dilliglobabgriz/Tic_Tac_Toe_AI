@@ -32,8 +32,8 @@ class TTTBoard():
 
 	# Return a tuple of ints
 	def get_coords(self) -> Tuple[int, int]: 
-		x_coord = '-1'
-		y_coord = '-1'
+		x_coord = input(f'Player {self.turn} enter your desired row (0-2):')
+		y_coord = input(f'Player {self.turn} enter your desired column (0-2):')
 		while not self.are_valid_coords(x_coord, y_coord):
 			x_coord = input(f'Player {self.turn} enter your desired row (0-2):')
 			y_coord = input(f'Player {self.turn} enter your desired column (0-2):')
@@ -61,15 +61,43 @@ class TTTBoard():
 			for j in range(self.rows):
 				if self.board[i][j] != 0:
 					remaining_cells -= 1
+		if remaining_cells == 0:
+			print("It's a tie!")
+			
 		return remaining_cells == 0
 
 	def is_winner(self) -> bool:
+		if self.has_three_in_a_row(1) or self.has_three_in_a_row(2):
+			self.turn = 2 if self.turn == 1 else 1
+			print(f'Player {self.turn} wins!')
+			return True
+		return False
+
+	def has_three_in_a_row(self, value):
+		# Horizontal check
+		for row in self.board:	
+			if row.count(value) == self.rows:
+				return True
+
+		# Vertical check
+		for col in range(self.rows):
+			if [self.board[i][col] for i in range(self.rows)].count(value) == self.rows:
+				return True
+		
+		# Diagonals
+		if [self.board[i][i] for i in range(self.rows)].count(value) == self.rows:
+			return True
+
+		if [self.board[i][2-i] for i in range(self.rows)].count(value) == self.rows:
+			return True	
+			
+	
+		# Default
 		return False
 
 	def run_game(self) -> None:
-		while not self.is_board_full():
+		while not self.is_winner() and not self.is_board_full():
 			print(self)
 			self.make_move(self.get_coords())
 		print(self)
-		print("It's a tie!")
 		print('Thanks for playing :)')
