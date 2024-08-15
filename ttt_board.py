@@ -101,3 +101,19 @@ class TTTBoard():
 			self.make_move(self.get_coords())
 		print(self)
 		print('Thanks for playing :)')
+
+	def run_game_one_player(self, ai) -> None:
+		while not self.is_winner() and not self.is_board_full():
+			print(self)
+			if self.turn == 1:
+				self.make_move(self.get_coords())
+			else:
+				ai.board = self.board
+				ai.turn = self.turn
+				self.make_move(ai.make_decision())
+
+		print(self)
+		print('Thanks for playing :)')
+
+
+
