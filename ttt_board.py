@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 class TTTBoard():
 	def __init__(self):
@@ -30,13 +30,28 @@ class TTTBoard():
 	def set_cell(self, value: int, row: int, col: int) -> None:
 		self.board[row][col] = value
 
-	def make_move(self) -> None:
-		valid_move: bool = False
-		move_coordinates: str = ''
-		while not valid_move:
-			move_coordinates = input(f'Player {self.turn} - select a square:')
-			valid_move = True
-		self.set_cell(self.turn, int(move_coordinates[0]), int(move_coordinates[1]))
+	# Return a tuple of ints
+	def get_coords(self) -> Tuple[int, int]: 
+		x_coord = '-1'
+		y_coord = '-1'
+		while not self.are_valid_coords(x_coord, y_coord):
+			x_coord = input(f'Player {self.turn} enter your desired row (0-2):')
+			y_coord = input(f'Player {self.turn} enter your desired column (0-2):')
+		
+		return (int(x_coord), int(y_coord))
+	
+	def are_valid_coords(self, x_coord: str,  y_coord: str) -> bool:
+		if x_coord not in '012' or y_coord not in '012':
+			print('Inputs must be either 0, 1, or 2!')
+			return False
+		if self.board[int(x_coord)][int(y_coord)] != 0:
+			print('This square is already taken!')
+			return False
+		return True	
+
+	# Coordinates is a tuple of ints
+	def make_move(self, coordinates: Tuple[int, int]) -> None:
+		self.set_cell(self.turn, coordinates[0], coordinates[1])
 		self.turn = 2 if self.turn == 1 else 1
 		
 
@@ -48,10 +63,13 @@ class TTTBoard():
 					remaining_cells -= 1
 		return remaining_cells == 0
 
+	def is_winner(self) -> bool:
+		return False
+
 	def run_game(self) -> None:
 		while not self.is_board_full():
 			print(self)
-			self.make_move()
+			self.make_move(self.get_coords())
 		print(self)
-		print('It's a tie!')
-		print('Thanks for playing :)'
+		print("It's a tie!")
+		print('Thanks for playing :)')
