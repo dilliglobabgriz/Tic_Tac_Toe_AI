@@ -61,17 +61,25 @@ class TTTBoard():
 			for j in range(self.rows):
 				if self.board[i][j] != 0:
 					remaining_cells -= 1
-		if remaining_cells == 0:
-			print("It's a tie!")
+		#if remaining_cells == 0:
+			#print("It's a tie!")
 			
 		return remaining_cells == 0
 
 	def is_winner(self) -> bool:
 		if self.has_three_in_a_row(1) or self.has_three_in_a_row(2):
 			self.turn = 2 if self.turn == 1 else 1
-			print(f'Player {self.turn} wins!')
+			#print(f'Player {self.turn} wins!')
 			return True
 		return False
+
+	def get_winner(self) -> int:
+		if self.has_three_in_a_row(1):
+			return 1
+		elif self.has_three_in_a_row(2):
+			return 2
+		else:
+			return -1
 
 	def has_three_in_a_row(self, value):
 		# Horizontal check
@@ -115,5 +123,31 @@ class TTTBoard():
 		print(self)
 		print('Thanks for playing :)')
 
-
-
+	def run_game_zero_player(self, ai1, ai2) -> None:
+		while not self.is_winner() and not self.is_board_full():
+			print(self)
+			if self.turn == 1:
+				ai1.board = self.board
+				ai1.turn = self.turn
+				self.make_move(ai1.make_decision())
+			else:
+				ai2.board = self.board
+				ai2.turn = self.turn
+				self.make_move(ai2.make_decision())
+		print(self)
+	
+	# Plays a full game between 2 ais and returns the winner (1 or 2)
+	def get_result_zero_player(self, ai1, ai2) -> int:
+		while not self.is_winner() and not self.is_board_full():
+			if self.turn == 1:
+				ai1.board = self.board
+				ai1.turn = self.turn
+				self.make_move(ai1.make_decision())
+			else:
+				ai2.board = self.board
+				ai2.turn = self.turn
+				self.make_move(ai2.make_decision())
+		if self.is_winner():
+			return self.get_winner()
+		else: 
+			return 0	
