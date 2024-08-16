@@ -15,6 +15,9 @@ class TTTBoard():
 		board_str += self.get_row_string(2)
 		return board_str
 
+	def swap_turn(self) -> None:
+		self.turn = 1 if self.turn == 2 else 1
+
 	def get_row_string(self, row: int) -> str:
 		row_vals: List[int] = self.board[row]
 		return f' {self.get_symbol(row_vals[0])} | {self.get_symbol(row_vals[1])} | {self.get_symbol(row_vals[2])} \n'

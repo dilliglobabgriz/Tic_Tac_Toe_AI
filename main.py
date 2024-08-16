@@ -60,8 +60,20 @@ def main():
 	if num_args == 4:
 		# List order is ties, 1 wins, 2 wins
 		ai_wins_list = [0,0,0]
+		# Each iteration run two games so each player can go first
 		for i in range(int(sys.argv[3])):
-			ai_wins_list[get_result_zero_player(sys.argv[1], sys.argv[2])] += 1
+			game_one_result = get_result_zero_player(sys.argv[1], sys.argv[2])
+			ai_wins_list[game_one_result] += 1
+			game_two_result = get_result_zero_player(sys.argv[2], sys.argv[1])
+			
+			# For game two we switch p1 and p2 so we adjust our counter accordingly
+			if game_two_result == 1:
+				ai_wins_list[2] += 1
+			elif game_two_result == 2:
+				ai_wins_list[1] += 1
+			else:
+				ai_wins_list[0] += 1
+			
 		print(f'Ties: {ai_wins_list[0]}')
 		print(f'{sys.argv[1]} AI wins: {ai_wins_list[1]}')
 		print(f'{sys.argv[2]} AI wins: {ai_wins_list[2]}')
