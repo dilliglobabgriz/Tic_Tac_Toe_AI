@@ -16,11 +16,11 @@ class PerfectAi():
 	def swap_turn(self) -> None:
 		self.turn = 3 - self.turn
 
-	def get_player_choices(self, player: int) -> List[Tuple[int, int]]:
+	def get_player_choices(self, player: int, board) -> List[Tuple[int, int]]:
 		choices: List[Tuple[int, int]] = []
 		for row in range(3):	
 			for col in range(3):
-				if self.board[row][col] == 0:
+				if board[row][col] == 0:
 					choices.append((row, col))
 		return choices
 
@@ -28,21 +28,41 @@ class PerfectAi():
 	# -10 means current player lost
 	# 0 means game is a tie
 	# 10 means current player won
-	def minimax_score(self) -> int:
+	def minimax_score(self, board, current_player, player_to_optimize) -> int:
 		# Determine is game is in terminal state
-		if self.has_three_in_a_row(self.turn, self.board):	
+		if self.has_three_in_a_row(player_to_optimize, board):	
 			return 10
-		if self.has_three_in_a_row(3 - self.turn, self.board):	
+		elif self.has_three_in_a_row(3 - player_to_optimize, board):	
 			return -10
-		elif self.get_player_choices(1) == []:
+		elif self.get_player_choices(1, board) == []:
 			return 0
-		return -1
 		
 					
 		# Starting from terminal states, recurse backwards making the best moves for each player
 		# If a non-terminal state leads to a terminal state with perfect play, that state should be treated as terminal
-		legal_moves: List[Tuple[int, int]] = get_player_choices(self.turn)		
+		legal_moves: List[Tuple[int, int]] = self.get_player_choices(current_player, board)		
+		
+		scores = []
 
+		for move in legal_moves:
+			new_board = self.make_move(board, move, current_player)
+
+			# Pass this back into minimax score function but with the current player swapped
+			opponent = 3 - current_player
+			score = self.minimax_score(new_board, opponent, player_to_optimize)
+			scores.append(score)
+			print(scores)			
+
+		if current_player == player_to_optimize:
+			return max(scores)
+		else:
+			return min(scores)			
+
+
+	def make_move(self, board: List[List[int]], move: Tuple[int, int], player) -> List[List[int]]:
+		new_board = [row[:] for row in board]
+		new_board[move[0]][move[1]] = player
+		return new_board
 
 	def make_decision(self) -> Tuple[int, int]:
 		my_choices: List[Tuple[int, int]] = self.get_player_choices(self.turn)
